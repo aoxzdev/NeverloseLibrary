@@ -15,7 +15,7 @@ if _G.NeverloseLibraryLoaded then
     notify.Size = 16
     notify.Color = Color3.fromRGB(255, 80, 80)
     notify.Position = Vector2.new(20, 60)
-    notify.Text = "Neverlose.cc | Universal\nfailed to load\n[users script name] is already loaded, please rejoin."
+    notify.Text = "Neverlose.cc \n script failed to load\n script already loaded, please rejoin."
     task.spawn(function()
         task.wait(6)
         notify:Remove()
