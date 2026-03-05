@@ -104,13 +104,13 @@ function NeverloseLibrary.new(opts)
     local library = setmetatable({}, NeverloseLibrary)
 
     print([[
- _______ .__
- \ \ _______ __ ___________| | ____ ______ ____
- / | \_/ __ \ \/ // __ \_ __ \ | / _ \/ ___// __ \
-/ | \ ___/\ /\ ___/| | \/ |_( <_> )___ \\ ___/
-\____|__ /\___ >\_/ \___ >__| |____/\____/____ >\___ >
-        \/ \/ \/ \/ \/
-               Neverlose Library, made by @gq3z
+  _   _                     _                 
+ | \ | |                   | |                
+ |  \| | _____   _____ _ __| | ___  ___  ___  
+ | . ` |/ _ \ \ / / _ \ '__| |/ _ \/ __|/ _ \ 
+ | |\  |  __/\ V /  __/ |  | | (_) \__ \  __/ 
+ |_| \_|\___| \_/ \___|_|  |_|\___/|___/\___|                            
+     Neverlose Library, made by @gq3z
     ]])
 
     library.cheatname    = opts.cheatname or ""
