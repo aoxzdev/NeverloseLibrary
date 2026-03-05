@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeverloseLibrary Docs</title>
+<style>
+    body{margin:0;background:#0c0c0c;color:#ddd;font-family:Segoe UI,Arial,sans-serif;line-height:1.6}
+    header{background:#001f3f;padding:20px;text-align:center;position:fixed;width:100%;top:0;z-index:10}
+    header h1{margin:0;font-size:2rem;color:#fff}
+    main{padding:120px 40px 40px}
+    section{max-width:800px;margin:auto;margin-bottom:60px;animation:fadeIn 1s}
+    pre{background:#111;color:#0ff;padding:15px;border-radius:4px;position:relative;overflow-x:auto}
+    button.copy{position:absolute;top:8px;right:8px;background:#001f3f;border:none;padding:5px 8px;color:#fff;cursor:pointer;border-radius:3px;font-size:.8rem}
+    code{font-family:Consolas,monospace;font-size:.9rem}
+    a{color:#00bfff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    footer{text-align:center;padding:20px 0;color:#888}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<header>
+    <h1>NeverloseLibrary</h1>
+</header>
+<main>
+    <section>
+        <h2>Getting started</h2>
+        <p>Copy this line into your script to load the UI directly:</p>
+        <pre><button class="copy">copy</button><code>loadstring(game:HttpGet("https://raw.githubusercontent.com/aoxzdev/NeverloseLibrary/refs/heads/main/Library.lua"))()</code></pre>
+        <p>or require the module file after downloading it.</p>
+    </section>
+    <section>
+        <h2>Constructor</h2>
+        <pre><button class="copy">copy</button><code>local MakeUI=require(path.to.NeverloseLibrary)
+local ui=MakeUI({cheatname="MyCheat",ext="",gamename="",assetId=12702460854})</code></pre>
+        <p><small>Options are all optional.</small></p>
+    </section>
+    <section>
+        <h2>Tabs &amp; groups</h2>
+        <pre><button class="copy">copy</button><code>local tab=ui:addTab("Main")
+local grp=tab:createGroup("left","Settings")</code></pre>
+    </section>
+    <section>
+        <h2>Control examples</h2>
+        <pre><button class="copy">copy</button><code>grp:addToggle{flag="opt",text="Option",callback=function(v)print(v)end}
+
+grp:addButton{text="Click",callback=function()print("clicked")end}
+
+grp:addSlider{flag="val",max=100,callback=function(v)print(v)end}</code></pre>
+    </section>
+    <section>
+        <h2>Accessing values</h2>
+        <pre><button class="copy">copy</button><code>print(ui.flags.opt)
+ui.options.val.changeState(50)</code></pre>
+    </section>
+    <section>
+        <h2>Toggle menu</h2>
+        <p>Press <strong>RightShift</strong> to show or hide the interface.</p>
+    </section>
+    <section>
+        <h2>Credits</h2>
+        <p>Created by <a href="https://github.com/aoxzdev" target="_blank">aoxzdev</a>.</p>
+    </section>
+</main>
+<footer>© 2026 aoxzdev</footer>
+<script>
+document.querySelectorAll('button.copy').forEach(btn=>{
+ btn.addEventListener('click',()=>{
+   const code=btn.nextElementSibling.innerText;
+   navigator.clipboard.writeText(code);
+   btn.textContent='copied';setTimeout(()=>btn.textContent='copy',800);
+ });
+});
+</script>
+</body>
+</html>
+    .tab {
+      display: flex;
+      align-items: center;
+      padding: 8px 14px;
+      background: #000;
+      color: #aaa;
+      border: 1px solid #2a2a2f;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+      position: relative;
+      max-width: 160px;
+    }
+
+    .tab:hover {
+      background: #000;
+      color: #ddd;
+    }
+
+    .tab.active {
+      background: linear-gradient(145deg, #000, #000);
+      color: #fff;
+      border-color: #000;
+      font-weight: bold;
+    }
+
+    .tab input {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      outline: none;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .close-btn {
+      margin-left: 8px;
+      color: #888;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: #e57373;
+    }
+
+    .add-tab {
+      padding: 8px 16px;
+      background: #000;
+      color: #ccc;
+      border: 1px dashed #000;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-size: 18px;
+      user-select: none;
+    }
+
+    .add-tab:hover {
+      background: #000;
+      color: #fff;
+    }
+
+    #container {
+      height: calc(100% - 60px);
+      width: 100%;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+      background: #000 !important;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .monaco-editor, .monaco-editor-background, .monaco-editor .margin, .monaco-editor .inputarea.ime-input {
+      background: #000 !important;
+    }
+
+    .monaco-editor .cursor {
+      animation: blinkCaret 1.2s step-end infinite;
+      transition: left 0.08s ease, top 0.08s ease, transform 0.15s ease, opacity 0.2s ease-in-out;
+    }
+
+
+    #tab-context-menu {
+      position: absolute;
+      z-index: 9999;
+      display: none;
+      min-width: 120px;
+      background: #181818;
+      color: #eee;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.5);
+    }
+    #tab-context-menu .context-item {
+      padding: 10px 18px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 15px;
+      transition: background 0.15s;
+    }
+    #tab-context-menu .context-item:hover {
+      background: #232323;
+      color: #fff;
+    }
+  </style>
+  <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
+</head>
+<body>
+  <div id="tabs"></div>
+  <div id="container"></div>
+
+
+  <div id="tab-context-menu">
+    <div class="context-item" id="context-rename">Rename</div>
+    <div class="context-item" id="context-delete">Delete</div>
+  </div>
+
+<script>
+  let editor;
+  let currentTabIndex = 0;
+  let tabData = JSON.parse(localStorage.getItem('tabsData')) || [
+    { name: 'Tab 1', content: '-- paste any script in here\nprint("Hello, World")' }
+  ];
+
+    let contextTabIndex = null; 
+
+    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+
+    require(['vs/editor/editor.main'], function () {
+      monaco.editor.defineTheme('darkCustom', {
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+          { token: '', foreground: 'FFFFFF', background: '000000' },
+          { token: 'keyword', foreground: '4FC3F7' },
+          { token: 'number', foreground: '81D4FA' },
+          { token: 'string', foreground: 'AED581' },
+          { token: 'comment', foreground: '757575', fontStyle: 'italic' },
+          { token: 'variable', foreground: '90CAF9' },
+          { token: 'function', foreground: '82B1FF' },
+          { token: 'type', foreground: 'F48FB1' },
+          { token: 'class', foreground: 'CE93D8' },
+          { token: 'constant', foreground: 'FFAB91' },
+          { token: 'operator', foreground: 'B0BEC5' }
+        ],
+        colors: {
+          'editor.background': '#000000',
+          'editor.foreground': '#FFFFFF',
+          'editorCursor.foreground': '#444654'
+        }
+      });
+
+      editor = monaco.editor.create(document.getElementById('container'), {
+        value: tabData[0].content,
+        language: 'lua',
+        theme: 'darkCustom',
+        fontSize: 14,
+        automaticLayout: true,
+        minimap: { enabled: false },
+        glyphMargin: false,
+        folding: false,
+        lineNumbers: 'on'
+      });
+
+      editor.onDidChangeModelContent(() => {
+        tabData[currentTabIndex].content = editor.getValue();
+        saveTabs();
+      });
+
+      renderTabs();
+
+      monaco.languages.registerCompletionItemProvider('lua', {
+        provideCompletionItems: () => {
+          const suggestions = [
+            { label: 'game', kind: monaco.languages.CompletionItemKind.Module, insertText: 'game' },
+            { label: 'workspace', kind: monaco.languages.CompletionItemKind.Module, insertText: 'workspace' },
+            { label: 'script', kind: monaco.languages.CompletionItemKind.Variable, insertText: 'script' },
+            { label: 'wait', kind: monaco.languages.CompletionItemKind.Function, insertText: 'wait(${1:1})', insertTextRules: 4 },
+            { label: 'print', kind: monaco.languages.CompletionItemKind.Function, insertText: 'print("${1:text}")', insertTextRules: 4 },
+            { label: 'Instance.new', kind: monaco.languages.CompletionItemKind.Constructor, insertText: 'Instance.new("${1:Part}")', insertTextRules: 4 },
+            { label: 'Vector3.new', kind: monaco.languages.CompletionItemKind.Constructor, insertText: 'Vector3.new(${1:0}, ${2:0}, ${3:0})', insertTextRules: 4 },
+            { label: 'CFrame.new', kind: monaco.languages.CompletionItemKind.Constructor, insertText: 'CFrame.new(${1:0}, ${2:0}, ${3:0})', insertTextRules: 4 },
+            { label: 'Part', kind: monaco.languages.CompletionItemKind.Class, insertText: 'Part' },
+            { label: 'LocalPlayer', kind: monaco.languages.CompletionItemKind.Property, insertText: 'game.Players.LocalPlayer' },
+          ];
+          return { suggestions };
+        }
+      });
+    });
+
+    function renderTabs() {
+      const tabContainer = document.getElementById('tabs');
+      tabContainer.innerHTML = '';
+
+      tabData.forEach((tab, i) => {
+        const tabEl = document.createElement('div');
+        tabEl.className = 'tab' + (i === currentTabIndex ? ' active' : '');
+
+        const label = document.createElement('span');
+        label.textContent = tab.name;
+        label.title = tab.name;
+
+        label.ondblclick = () => {
+          renameTabInline(tabEl, label, i);
+        };
+
+
+        tabEl.oncontextmenu = (e) => {
+          e.preventDefault();
+          showTabContextMenu(e, i);
+        };
+
+        const close = document.createElement('span');
+        close.textContent = '×';
+        close.className = 'close-btn';
+        close.onclick = (e) => {
+          e.stopPropagation();
+          closeTab(i);
+        };
+
+        tabEl.appendChild(label);
+        tabEl.appendChild(close);
+        tabEl.onclick = () => switchTab(i);
+
+        tabContainer.appendChild(tabEl);
+      });
+
+      const addTab = document.createElement('div');
+      addTab.className = 'add-tab';
+      addTab.textContent = '+';
+      addTab.onclick = addNewTab;
+
+      tabContainer.appendChild(addTab);
+    }
+
+    function renameTabInline(tabEl, label, i) {
+      const input = document.createElement('input');
+      input.value = tabData[i].name;
+      input.onblur = () => {
+        tabData[i].name = input.value.trim() || 'Untitled';
+        renderTabs();
+        saveTabs();
+      };
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') input.blur();
+      };
+      tabEl.replaceChild(input, label);
+      input.focus();
+      input.select();
+    }
+
+    function switchTab(index) {
+      if (index === currentTabIndex) return;
+      tabData[currentTabIndex].content = editor.getValue();
+      currentTabIndex = index;
+      document.getElementById('container').style.opacity = '0';
+      setTimeout(() => {
+        editor.setValue(tabData[currentTabIndex].content || '');
+        document.getElementById('container').style.animation = 'fadeIn 0.4s forwards';
+      }, 150);
+      renderTabs();
+      saveTabs();
+    }
+
+    function addNewTab() {
+      const newTab = {
+        name: `Tab ${tabData.length + 1}`,
+        content: '-- https://discord.gg/JC6HVgdm9d '
+      };
+      tabData.push(newTab);
+      currentTabIndex = tabData.length - 1;
+      renderTabs();
+      editor.setValue(newTab.content);
+      saveTabs();
+    }
+
+    function closeTab(index) {
+      if (tabData.length === 1) return;
+      tabData.splice(index, 1);
+      if (currentTabIndex >= tabData.length) currentTabIndex = tabData.length - 1;
+      renderTabs();
+      editor.setValue(tabData[currentTabIndex].content);
+      saveTabs();
+    }
+
+    function saveTabs() {
+      localStorage.setItem('tabsData', JSON.stringify(tabData));
+    }
+
+    window.getEditorText = function () {
+      return editor.getValue();
+    };
+
+    function showTabContextMenu(e, tabIndex) {
+      const menu = document.getElementById('tab-context-menu');
+      contextTabIndex = tabIndex;
+      menu.style.top = `${e.clientY}px`;
+      menu.style.left = `${e.clientX}px`;
+      menu.style.display = 'block';
+
+      setTimeout(() => {
+        const rect = menu.getBoundingClientRect();
+        if (rect.right > window.innerWidth) {
+          menu.style.left = `${window.innerWidth - rect.width - 5}px`;
+        }
+        if (rect.bottom > window.innerHeight) {
+          menu.style.top = `${window.innerHeight - rect.height - 5}px`;
+        }
+      }, 1);
+    }
+
+
+    document.addEventListener('mousedown', function(e) {
+      const menu = document.getElementById('tab-context-menu');
+      if (!menu.contains(e.target)) {
+        menu.style.display = 'none';
+      }
+    });
+
+
+    document.getElementById('context-rename').onclick = function() {
+      if (contextTabIndex !== null) {
+        const tabContainer = document.getElementById('tabs');
+        const tabEl = tabContainer.children[contextTabIndex];
+        const label = tabEl.querySelector('span');
+        renameTabInline(tabEl, label, contextTabIndex);
+        document.getElementById('tab-context-menu').style.display = 'none';
+      }
+    };
+
+
+    document.getElementById('context-delete').onclick = function() {
+      if (contextTabIndex !== null) {
+        closeTab(contextTabIndex);
+        document.getElementById('tab-context-menu').style.display = 'none';
+      }
+    };
+
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") {
+        document.getElementById('tab-context-menu').style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
