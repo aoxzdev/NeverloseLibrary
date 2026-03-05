@@ -1,4 +1,3 @@
-
 local inputService   = game:GetService("UserInputService")
 local runService     = game:GetService("RunService")
 local tweenService   = game:GetService("TweenService")
@@ -55,14 +54,10 @@ local keyNames = {
     [Enum.UserInputType.MouseButton3] = 'MB3';
 }
 
-
--- root table used for metatables/reference
 local NeverloseLibrary = {}
+NeverloseLibrary.__index = NeverloseLibrary
 
-local Internal = {}
-Internal.__index = Internal
-
-function Internal.new(opts)
+function NeverloseLibrary.new(opts)
     opts = opts or {}
     local library = setmetatable({}, NeverloseLibrary)
 
@@ -139,12 +134,6 @@ function Internal.new(opts)
     
     local menu = game:GetObjects("rbxassetid://"..library.assetId)[1]
     if syn and syn.protect_gui then pcall(syn.protect_gui, menu) end
-    -- remove any embedded scripts from the asset (they often throw nil errors)
-    for _, obj in ipairs(menu:GetDescendants()) do
-        if obj:IsA("Script") or obj:IsA("LocalScript") or obj:IsA("ModuleScript") then
-            obj:Destroy()
-        end
-    end
     menu.bg.Position = UDim2.new(0.5,-menu.bg.Size.X.Offset/2,0.5,-menu.bg.Size.Y.Offset/2)
     menu.Parent = game:GetService("CoreGui")
     menu.bg.pre.Text = library.cheatname..library.ext..library.gamename
@@ -897,7 +886,7 @@ function Internal.new(opts)
                 button.Position = UDim2.new(0,0,0,0)
                 button.Size = UDim2.new(0.02,0,1,0)
                 button.Font = Enum.Font.Code
-                button.Text = "..."
+                button.Text = ""
                 button.TextColor3 = Color3.fromRGB(155,155,155)
                 button.TextSize = 13
                 button.TextStrokeTransparency = 0
@@ -941,99 +930,4 @@ function Internal.new(opts)
     return library
 end
 
-
--- wrapper API
-local Library = {}
-Library.__index = Library
-Library.Window = {}
-Library.Window.__index = Library.Window
-Library.Tab = {}
-Library.Tab.__index = Library.Tab
-Library.Groupbox = {}
-Library.Groupbox.__index = Library.Groupbox
-
--- global tables
-getgenv().Options = getgenv().Options or {}
-getgenv().Toggles = getgenv().Toggles or {}
-
-function Library.CreateWindow(opts)
-    local core = Internal.new(opts)
-    local win = setmetatable({core=core}, Library.Window)
-    return win
-end
-Library.new = Library.CreateWindow
-
-function Library.Window:AddTab(name)
-    local coretab = self.core:addTab(name)
-    local tab = setmetatable({core=coretab}, Library.Tab)
-    return tab
-end
-
-function Library.Tab:AddLeftGroupbox(name)
-    local grp = self.core:createGroup("left", name)
-    return setmetatable({core=grp}, Library.Groupbox)
-end
-function Library.Tab:AddRightGroupbox(name)
-    local grp = self.core:createGroup("right", name)
-    return setmetatable({core=grp}, Library.Groupbox)
-end
-
--- groupbox helpers wrap original methods and expose Linoria-style API
-function Library.Groupbox:AddToggle(idx, info)
-    local args = {flag=idx, text=info.Text, callback=info.OnChanged, disabled=info.Disabled}
-    local togg = self.core:addToggle(args)
-    getgenv().Toggles[idx] = {
-        Value = self.core.flags[idx],
-        OnChanged = function(fn) info.OnChanged = fn end,
-        SetValue = function(val) self.core.options[idx].changeState(val) end,
-    }
-    return getgenv().Toggles[idx]
-end
-
-function Library.Groupbox:AddButton(text, callback)
-    return self.core:addButton{ text=text, callback=callback }
-end
-
-function Library.Groupbox:AddLabel(text)
-    -- simple label is a disabled toggle
-    self.core:addToggle{flag=text,text=text,callback=function()end,disabled=true}
-end
-function Library.Groupbox:AddDivider()
-    return self.core:addDivider()
-end
-function Library.Groupbox:AddSlider(idx, info)
-    local args={flag=idx,max=info.Max,min=info.Min or 0,value=info.Default or 0,text=info.Text,callback=info.OnChanged}
-    self.core:addSlider(args)
-    getgenv().Options[idx]={Value=self.core.flags[idx],OnChanged=info.OnChanged,SetValue=function(v) self.core.options[idx].changeState(v) end}
-    return getgenv().Options[idx]
-end
-
-function Library.Groupbox:AddInput(idx, info)
-    local args={flag=idx,text=info.Text,value=info.Default or "",callback=info.OnChanged}
-    self.core:addTextbox(args)
-    getgenv().Options[idx]={Value=self.core.flags[idx],OnChanged=info.OnChanged,SetValue=function(v) self.core.options[idx].changeState(v) end}
-    return getgenv().Options[idx]
-end
-
-function Library.Groupbox:AddDropdown(idx, info)
-    local args={flag=idx,values=info.Values,multiselect=info.Multi,text=info.Text,value=(info.Values and info.Values[info.Default]) or info.Default,callback=info.OnChanged}
-    self.core:addList(args)
-    getgenv().Options[idx]={Value=self.core.flags[idx],OnChanged=info.OnChanged,SetValue=function(v) self.core.options[idx].changeState(v) end}
-    return getgenv().Options[idx]
-end
-
-function Library.Groupbox:AddColorPicker(idx, info)
-    local args={flag=idx,color=info.Default,callback=info.OnChanged}
-    self.core:addColorpicker(args)
-    getgenv().Options[idx]={Value=self.core.flags[idx],OnChanged=info.OnChanged,SetValue=function(v) self.core.options[idx].changeState(v) end}
-    return getgenv().Options[idx]
-end
-
-function Library.Groupbox:AddKeyPicker(idx, info)
-    local args={flag=idx,key=info.Default or Enum.KeyCode.Unknown,text=info.Text,callback=info.OnChanged}
-    self.core:addKeybind(args)
-    getgenv().Options[idx]={Value=self.core.flags[idx],OnChanged=info.OnChanged,SetValue=function(v) self.core.options[idx].changeState(v) end,GetState=function() return self.core.flags[idx]==v end}
-    return getgenv().Options[idx]
-end
-
-return Library
+return NeverloseLibrary
