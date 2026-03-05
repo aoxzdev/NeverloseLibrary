@@ -1,6 +1,3 @@
-
--- Made by @gq3z 
-
 local UserInputService = game:GetService("UserInputService")
 local RunService       = game:GetService("RunService")
 local TweenService     = game:GetService("TweenService")
@@ -64,13 +61,14 @@ function NeverloseLibrary.new(opts)
     local library = setmetatable({}, NeverloseLibrary)
 
     print([[
- _______ .__
- \ \ _______ __ ___________| | ____ ______ ____
- / | \_/ __ \ \/ // __ \_ __ \ | / _ \/ ___// __ \
-/ | \ ___/\ /\ ___/| | \/ |_( <_> )___ \\ ___/
-\____|__ /\___ >\_/ \___ >__| |____/\____/____ >\___ >
-        \/ \/ \/ \/ \/
-               Neverlose Library, made by @gq3z
+  _   _                     _                 
+ | \ | |                   | |                
+ |  \| | _____   _____ _ __| | ___  ___  ___  
+ | . ` |/ _ \ \ / / _ \ '__| |/ _ \/ __|/ _ \ 
+ | |\  |  __/\ V /  __/ |  | | (_) \__ \  __/ 
+ |_| \_|\___| \_/ \___|_|  |_|\___/|___/\___| 
+                                                                             
+         Neverlose Library, made by @gq3z
     ]])
 
     library.cheatname = opts.cheatname or ""
@@ -123,7 +121,7 @@ function NeverloseLibrary.new(opts)
     function library:notify(text)
         if self.playing then return end
         self.playing = true
-        self.notifyText.Text = text
+        self.notifyText.Text = text or ""
         self.notifyText.Transparency = 0
         self.notifyText.Visible = true
         for i=0,1,0.1 do task.wait() self.notifyText.Transparency = i end
@@ -140,7 +138,7 @@ function NeverloseLibrary.new(opts)
         local newButton = self.tabviewer.button:Clone()
         table.insert(self.tabs,newTab)
         newTab.Parent = self.tabholder
-        newTab.Visible = false
+        newTab.Visible = #self.tabs == 1  -- make first tab visible
         table.insert(self.tabbuttons,newButton)
         newButton.Parent = self.tabviewer
         newButton.Modal = true
@@ -161,6 +159,11 @@ function NeverloseLibrary.new(opts)
                 end
             end
         end)
+        if #self.tabs == 1 then
+            newButton.element.Visible = true
+            self:Tween(newButton.element, TweenInfo.new(0.3,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=0})
+            newButton.text.TextColor3 = Color3.fromRGB(244,244,244)
+        end
 
         local tab = {}
         local groupCount, jigCount, topStuff = 0,0,2000
@@ -623,7 +626,7 @@ function NeverloseLibrary.new(opts)
                 UIListLayout.Parent=holder; UIListLayout.SortOrder=Enum.SortOrder.LayoutOrder
 
                 local function updateValue(value)
-                    if value == nil then valuetext.Text="nil" return end
+                    if value == nil then valuetext.Text="No selection" return end
                     if args.multiselect then
                         if type(value)=="string" then
                             if not table.find(library.options[args.flag].values,value) then return end
@@ -640,7 +643,7 @@ function NeverloseLibrary.new(opts)
                             local jig = i~= #library.flags[args.flag] and "," or ""
                             buttonText = buttonText..v..jig
                         end
-                        if buttonText=="" then buttonText="..." end
+                        if buttonText=="" then buttonText="No selection" end
                         for i,v in next, holder:GetChildren() do
                             if v.ClassName~="Frame" then continue end
                             v.off.TextColor3 = Color3.new(0.65,0.65,0.65)
@@ -689,7 +692,7 @@ function NeverloseLibrary.new(opts)
                 table.insert(library.toInvis,frame)
                 library.flags[args.flag] = args.multiselect and {} or ""
                 library.options[args.flag] = {type="list",changeState=updateValue,values=args.values,refresh=refresh,skipflag=args.skipflag,oldargs=args}
-                refresh(args.values)
+                refresh(args.values or {})
                 updateValue(args.value or (not args.multiselect and args.values[1] or ""))
             end
 
@@ -748,7 +751,7 @@ function NeverloseLibrary.new(opts)
                 library.flags[args.flag]=""
                 library.options[args.flag]={type="cfg",changeState=updateValue,values=args.values,refresh=refresh,skipflag=args.skipflag,oldargs=args}
                 refresh(args.values)
-                updateValue(args.value or args.values[1])
+                updateValue(args.value or args.values[1] or "")
             end
 
             function group:addColorpicker(args)
@@ -800,7 +803,7 @@ function NeverloseLibrary.new(opts)
                 pickerBtn.TextSize = 14
 
                 local function buildColorDialog()
-                    -- Stub for full color picker UI - enhance with actual HSV picker if needed
+                    
                 end
                 
                 
@@ -882,127 +885,6 @@ function NeverloseLibrary.new(opts)
 
         return tab
     end
-
-    -- Auto-add Settings tab
-    local settingsTab = library:addTab("Settings")
-    local configGroup = settingsTab:createGroup("left", "Configuration")
-
-    local configFolder = "Neverlose/Configs"
-    local currentConfigName = ""
-
-    local function ensureConfigFolder()
-        if makefolder and not isfolder(configFolder) then
-            makefolder(configFolder)
-            library:notify("Created config folder: " .. configFolder)
-        end
-    end
-
-    local function getConfigList()
-        if not listfiles then return {} end
-        
-        ensureConfigFolder()
-        local files = listfiles(configFolder)
-        local configs = {}
-        
-        for _, path in ipairs(files) do
-            if path:match("%.json$") then
-                local name = path:match("([^/\\]+)%.json$")
-                if name then
-                    table.insert(configs, name)
-                end
-            end
-        end
-        
-        return configs
-    end
-
-    local function saveConfig(name)
-        if name == "" then
-            library:notify("Enter config name first!")
-            return
-        end
-        
-        ensureConfigFolder()
-        
-        local data = {}
-        for flag, value in pairs(library.flags) do
-            data[flag] = value
-        end
-        
-        local json = HttpService:JSONEncode(data)
-        local path = configFolder .. "/" .. name .. ".json"
-        
-        writefile(path, json)
-        library:notify("Saved config: " .. name)
-    end
-
-    local function loadConfig(name)
-        local path = configFolder .. "/" .. name .. ".json"
-        
-        if not isfile(path) then
-            library:notify("Config not found: " .. name)
-            return
-        end
-        
-        local content = readfile(path)
-        local data = HttpService:JSONDecode(content)
-        
-        for flag, value in pairs(data) do
-            if library.options[flag] and library.options[flag].changeState then
-                library.options[flag].changeState(value)
-            end
-        end
-        
-        library:notify("Loaded config: " .. name)
-    end
-
-    configGroup:addTextbox({
-        text = "Config Name",
-        flag = "_config_name_temp",
-        value = "",
-        callback = function(text)
-            currentConfigName = text
-        end
-    })
-
-    configGroup:addButton({
-        text = "Create / Save Config",
-        callback = function()
-            saveConfig(currentConfigName)
-            if library.options["_config_select"] and library.options["_config_select"].refresh then
-                library.options["_config_select"].refresh(getConfigList())
-            end
-        end
-    })
-
-    configGroup:addList({
-        text = "Select Config",
-        flag = "_config_select",
-        values = getConfigList(),
-        callback = function(selected)
-            if selected and selected ~= "" then
-                loadConfig(selected)
-            end
-        end
-    })
-
-    configGroup:addButton({
-        text = "Refresh List",
-        callback = function()
-            if library.options["_config_select"] and library.options["_config_select"].refresh then
-                library.options["_config_select"].refresh(getConfigList())
-                library:notify("Config list refreshed")
-            end
-        end
-    })
-
-    configGroup:addButton({
-        text = "Kill GUI",
-        callback = function()
-            library.menu:Destroy()
-            library:notify("GUI killed - reload script to reopen")
-        end
-    })
 
     return library
 end
