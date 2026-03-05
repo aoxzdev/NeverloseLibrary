@@ -1,428 +1,817 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<title>NeverloseLibrary Docs</title>
-<style>
-    body{margin:0;background:#0c0c0c;color:#ddd;font-family:Segoe UI,Arial,sans-serif;line-height:1.6}
-    header{background:#001f3f;padding:20px;text-align:center;position:fixed;width:100%;top:0;z-index:10}
-    header h1{margin:0;font-size:2rem;color:#fff}
-    main{padding:120px 40px 40px}
-    section{max-width:800px;margin:auto;margin-bottom:60px;animation:fadeIn 1s}
-    pre{background:#111;color:#0ff;padding:15px;border-radius:4px;position:relative;overflow-x:auto}
-    button.copy{position:absolute;top:8px;right:8px;background:#001f3f;border:none;padding:5px 8px;color:#fff;cursor:pointer;border-radius:3px;font-size:.8rem}
-    code{font-family:Consolas,monospace;font-size:.9rem}
-    a{color:#00bfff;text-decoration:none}
-    a:hover{text-decoration:underline}
-    footer{text-align:center;padding:20px 0;color:#888}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-</style>
-</head>
-<body>
-<header>
-    <h1>NeverloseLibrary</h1>
-</header>
-<main>
-    <section>
-        <h2>Getting started</h2>
-        <p>Copy this line into your script to load the UI directly:</p>
-        <pre><button class="copy">copy</button><code>loadstring(game:HttpGet("https://raw.githubusercontent.com/aoxzdev/NeverloseLibrary/refs/heads/main/Library.lua"))()</code></pre>
-        <p>or require the module file after downloading it.</p>
-    </section>
-    <section>
-        <h2>Constructor</h2>
-        <pre><button class="copy">copy</button><code>local MakeUI=require(path.to.NeverloseLibrary)
-local ui=MakeUI({cheatname="MyCheat",ext="",gamename="",assetId=12702460854})</code></pre>
-        <p><small>Options are all optional.</small></p>
-    </section>
-    <section>
-        <h2>Tabs &amp; groups</h2>
-        <pre><button class="copy">copy</button><code>local tab=ui:addTab("Main")
-local grp=tab:createGroup("left","Settings")</code></pre>
-    </section>
-    <section>
-        <h2>Control examples</h2>
-        <pre><button class="copy">copy</button><code>grp:addToggle{flag="opt",text="Option",callback=function(v)print(v)end}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="description" content="Neverlose Script Forge — Post-2025 next-generation Lua(u) / Roblox development environment built for shadow coders"/>
+  <title>Neverlose Script Forge • Shadow-Core Edition • 2026</title>
 
-grp:addButton{text="Click",callback=function()print("clicked")end}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-grp:addSlider{flag="val",max=100,callback=function(v)print(v)end}</code></pre>
-    </section>
-    <section>
-        <h2>Accessing values</h2>
-        <pre><button class="copy">copy</button><code>print(ui.flags.opt)
-ui.options.val.changeState(50)</code></pre>
-    </section>
-    <section>
-        <h2>Toggle menu</h2>
-        <p>Press <strong>RightShift</strong> to show or hide the interface.</p>
-    </section>
-    <section>
-        <h2>Credits</h2>
-        <p>Created by <a href="https://github.com/aoxzdev" target="_blank">aoxzdev</a>.</p>
-    </section>
-</main>
-<footer>© 2026 aoxzdev</footer>
-<script>
-document.querySelectorAll('button.copy').forEach(btn=>{
- btn.addEventListener('click',()=>{
-   const code=btn.nextElementSibling.innerText;
-   navigator.clipboard.writeText(code);
-   btn.textContent='copied';setTimeout(()=>btn.textContent='copy',800);
- });
-});
-</script>
-</body>
-</html>
-    .tab {
+  <style>
+    :root {
+      --bg-primary:        #000000;
+      --bg-secondary:      #0a0a0f;
+      --bg-tertiary:       #111122;
+      --bg-elevated:       #161622;
+      --bg-active:         #1e1e38;
+      --bg-hover:          #25253f;
+
+      --fg-primary:        #e8e8ff;
+      --fg-secondary:      #b0b0d8;
+      --fg-dim:            #8080a0;
+      --fg-muted:          #606080;
+
+      --accent-cyan:       #00eaff;
+      --accent-cyan-dim:   #00aacc;
+      --accent-purple:     #c678dd;
+      --accent-purple-dim: #a050c0;
+      --accent-red:        #ff5555;
+      --accent-green:      #50fa7b;
+
+      --border-subtle:     #1a1a2e;
+      --border-strong:     #2a2a44;
+
+      --scrollbar:         #2a2a55;
+      --scrollbar-hover:   #404080;
+
+      --selection:         #44448866;
+      --cursor:            #00eaff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      background: var(--bg-primary);
+      color: var(--fg-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #app-root {
+      display: flex;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* ─── Sidebar (Explorer + Activity Bar) ──────────────────────────────── */
+    #activity-bar {
+      width: 48px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      user-select: none;
+    }
+
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      margin: 4px 0;
       display: flex;
       align-items: center;
-      padding: 8px 14px;
-      background: #000;
-      color: #aaa;
-      border: 1px solid #2a2a2f;
-      border-radius: 8px;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--fg-dim);
       cursor: pointer;
-      transition: all 0.25s ease;
-      user-select: none;
-      position: relative;
-      max-width: 160px;
+      border-radius: 6px;
+      transition: all 0.13s;
     }
 
-    .tab:hover {
-      background: #000;
-      color: #ddd;
+    .activity-icon:hover,
+    .activity-icon.active {
+      background: var(--bg-hover);
+      color: var(--accent-cyan);
     }
 
-    .tab.active {
-      background: linear-gradient(145deg, #000, #000);
-      color: #fff;
-      border-color: #000;
-      font-weight: bold;
-    }
-
-    .tab input {
-      background: transparent;
-      border: none;
-      color: #ccc;
-      outline: none;
-      font-size: 14px;
-      width: 100%;
-    }
-
-    .close-btn {
-      margin-left: 8px;
-      color: #888;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-
-    .close-btn:hover {
-      color: #e57373;
-    }
-
-    .add-tab {
-      padding: 8px 16px;
-      background: #000;
-      color: #ccc;
-      border: 1px dashed #000;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      font-size: 18px;
-      user-select: none;
-    }
-
-    .add-tab:hover {
-      background: #000;
-      color: #fff;
-    }
-
-    #container {
-      height: calc(100% - 60px);
-      width: 100%;
-      opacity: 0;
-      animation: fadeIn 0.5s forwards;
-      background: #000 !important;
-    }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    .monaco-editor, .monaco-editor-background, .monaco-editor .margin, .monaco-editor .inputarea.ime-input {
-      background: #000 !important;
-    }
-
-    .monaco-editor .cursor {
-      animation: blinkCaret 1.2s step-end infinite;
-      transition: left 0.08s ease, top 0.08s ease, transform 0.15s ease, opacity 0.2s ease-in-out;
-    }
-
-
-    #tab-context-menu {
+    .activity-icon.active::after {
+      content: '';
       position: absolute;
-      z-index: 9999;
-      display: none;
-      min-width: 120px;
-      background: #181818;
-      color: #eee;
-      border: 1px solid #333;
-      border-radius: 8px;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.5);
+      left: 0;
+      width: 3px;
+      height: 24px;
+      background: var(--accent-cyan);
+      border-radius: 0 4px 4px 0;
     }
-    #tab-context-menu .context-item {
-      padding: 10px 18px;
+
+    #sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      transition: width 0.18s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #sidebar.collapsed { width: 0; padding: 0; }
+
+    #sidebar-header {
+      height: 36px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid var(--border-subtle);
+      letter-spacing: 0.5px;
+    }
+
+    #resize-grip {
+      position: absolute;
+      right: -4px;
+      top: 0;
+      bottom: 0;
+      width: 8px;
+      cursor: ew-resize;
+      z-index: 20;
+    }
+
+    #explorer-tree {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 8px 0;
+    }
+
+    .tree-node {
+      padding: 3px 12px 3px 28px;
       cursor: pointer;
-      user-select: none;
-      font-size: 15px;
-      transition: background 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--fg-secondary);
+      position: relative;
+      transition: background 0.1s;
     }
-    #tab-context-menu .context-item:hover {
-      background: #232323;
-      color: #fff;
+
+    .tree-node:hover { background: var(--bg-hover); }
+    .tree-node.active  { background: var(--bg-active); color: white; }
+
+    .tree-node.folder::before {
+      content: '▸';
+      position: absolute;
+      left: 10px;
+      font-size: 10px;
+      transition: transform 0.15s;
+    }
+
+    .tree-node.folder.open::before { transform: rotate(90deg); }
+
+    .tree-node.file::before {
+      content: 'file';
+      position: absolute;
+      left: 10px;
+      font-size: 13px;
+      color: var(--accent-purple);
+    }
+
+    .tree-children {
+      display: none;
+    }
+
+    .tree-children.open {
+      display: block;
+    }
+
+    /* ─── Editor Area ─────────────────────────────────────────────────────── */
+    #main-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+
+    #tab-bar {
+      height: 38px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      padding: 0 8px;
+      user-select: none;
+    }
+
+    .editor-tab {
+      height: 100%;
+      min-width: 90px;
+      max-width: 240px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      margin: 0 2px 0 0;
+      color: var(--fg-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .editor-tab.active {
+      background: var(--bg-primary);
+      color: white;
+      border-color: var(--accent-cyan-dim);
+      border-bottom: 1px solid transparent;
+      z-index: 2;
+    }
+
+    .editor-tab .tab-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .editor-tab .tab-close {
+      opacity: 0.5;
+      font-size: 16px;
+      margin-left: 4px;
+    }
+
+    .editor-tab .tab-close:hover {
+      opacity: 1;
+      color: var(--accent-red);
+    }
+
+    #add-tab-btn {
+      width: 36px;
+      height: 28px;
+      background: transparent;
+      border: 1px dashed var(--border-subtle);
+      color: var(--fg-dim);
+      font-size: 18px;
+      line-height: 26px;
+      text-align: center;
+      cursor: pointer;
+      margin-left: 8px;
+      border-radius: 4px;
+      transition: all 0.13s;
+    }
+
+    #add-tab-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(0,234,255,0.04);
+    }
+
+    #editor-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Monaco overrides */
+    .monaco-editor,
+    .monaco-editor .margin,
+    .monaco-editor-background {
+      background: var(--bg-primary) !important;
+    }
+
+    .cursor {
+      background: var(--cursor) !important;
+    }
+
+    /* Slim & modern scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar);
+      border-radius: 5px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-hover);
+    }
+
+    /* Context Menu */
+    #context-menu {
+      position: absolute;
+      z-index: 99999;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+      min-width: 160px;
+      padding: 6px 0;
+      display: none;
+      font-size: 13px;
+    }
+
+    .context-item {
+      padding: 8px 16px;
+      cursor: pointer;
+      color: var(--fg-secondary);
+    }
+
+    .context-item:hover {
+      background: var(--bg-active);
+      color: white;
+    }
+
+    .context-separator {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 4px 0;
+    }
+
+    /* Status Bar */
+    #status-bar {
+      height: 24px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 12px;
+      color: var(--fg-dim);
+      justify-content: space-between;
+    }
+
+    #status-left, #status-right {
+      display: flex;
+      gap: 16px;
     }
   </style>
-  <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
+
+  <script src="https://unpkg.com/monaco-editor@0.52.0/min/vs/loader.js"></script>
 </head>
 <body>
-  <div id="tabs"></div>
-  <div id="container"></div>
 
-
-  <div id="tab-context-menu">
-    <div class="context-item" id="context-rename">Rename</div>
-    <div class="context-item" id="context-delete">Delete</div>
+<div id="app-root">
+  <!-- Activity Bar (leftmost icons) -->
+  <div id="activity-bar">
+    <div class="activity-icon active" data-view="explorer" title="Explorer">🗂</div>
+    <div class="activity-icon" data-view="search"    title="Search">🔍</div>
+    <div class="activity-icon" data-view="source"    title="Source Control">⎇</div>
+    <div class="activity-icon" data-view="debug"     title="Run & Debug">▶</div>
+    <div class="activity-icon" data-view="extensions"title="Extensions">🧩</div>
   </div>
 
+  <!-- Sidebar (Explorer by default) -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span>EXPLORER</span>
+      <span style="opacity:0.6; cursor:pointer;" onclick="toggleSidebar()">◄</span>
+    </div>
+    <div id="explorer-tree"></div>
+    <div id="resize-grip"></div>
+  </div>
+
+  <!-- Main Editor Area -->
+  <div id="main-panel">
+    <div id="tab-bar">
+      <!-- dynamic tabs -->
+      <div id="add-tab-btn">+</div>
+    </div>
+
+    <div id="editor-container"></div>
+
+    <div id="status-bar">
+      <div id="status-left">
+        <span>Lua • UTF-8</span>
+        <span>LF</span>
+        <span id="cursor-pos">Ln 1, Col 1</span>
+      </div>
+      <div id="status-right">
+        <span>Neverlose Shadow-Core • 2026</span>
+        <span id="performance-indicator">0 ms</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="context-menu">
+  <div class="context-item" id="ctx-rename">Rename</div>
+  <div class="context-item" id="ctx-delete">Delete</div>
+  <div class="context-item" id="ctx-duplicate">Duplicate</div>
+  <div class="context-separator"></div>
+  <div class="context-item">Reveal in Explorer</div>
+  <div class="context-item">Copy Path</div>
+</div>
+
 <script>
-  let editor;
-  let currentTabIndex = 0;
-  let tabData = JSON.parse(localStorage.getItem('tabsData')) || [
-    { name: 'Tab 1', content: '-- paste any script in here\nprint("Hello, World")' }
-  ];
+// ────────────────────────────────────────────────────────────────────────────────
+//  Neverlose Script Forge — Shadow-Core Edition
+//  Post-singularity Lua(u) / Roblox IDE — March 2026
+// ────────────────────────────────────────────────────────────────────────────────
 
-    let contextTabIndex = null; 
+let editor = null;
+let currentTabId = null;
+let nextTabCounter = 1;
 
-    require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+let tabs = JSON.parse(localStorage.getItem('nf_tabs_2026')) || [
+  {
+    id: 'initial-1',
+    name: 'shadow_entry.lua',
+    content: `-- Neverlose Shadow-Core • 2026
+-- Post-singularity exploit scaffolding template
 
-    require(['vs/editor/editor.main'], function () {
-      monaco.editor.defineTheme('darkCustom', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [
-          { token: '', foreground: 'FFFFFF', background: '000000' },
-          { token: 'keyword', foreground: '4FC3F7' },
-          { token: 'number', foreground: '81D4FA' },
-          { token: 'string', foreground: 'AED581' },
-          { token: 'comment', foreground: '757575', fontStyle: 'italic' },
-          { token: 'variable', foreground: '90CAF9' },
-          { token: 'function', foreground: '82B1FF' },
-          { token: 'type', foreground: 'F48FB1' },
-          { token: 'class', foreground: 'CE93D8' },
-          { token: 'constant', foreground: 'FFAB91' },
-          { token: 'operator', foreground: 'B0BEC5' }
-        ],
-        colors: {
-          'editor.background': '#000000',
-          'editor.foreground': '#FFFFFF',
-          'editorCursor.foreground': '#444654'
-        }
-      });
+local Players       = game:GetService("Players")
+local RunService    = game:GetService("RunService")
+local UserInput     = game:GetService("UserInputService")
+local HttpService   = game:GetService("HttpService")
 
-      editor = monaco.editor.create(document.getElementById('container'), {
-        value: tabData[0].content,
-        language: 'lua',
-        theme: 'darkCustom',
-        fontSize: 14,
-        automaticLayout: true,
-        minimap: { enabled: false },
-        glyphMargin: false,
-        folding: false,
-        lineNumbers: 'on'
-      });
+local LocalPlayer   = Players.LocalPlayer
+local Mouse         = LocalPlayer:GetMouse()
 
-      editor.onDidChangeModelContent(() => {
-        tabData[currentTabIndex].content = editor.getValue();
-        saveTabs();
-      });
+print("[SHADOW-CORE] Initialization sequence started...")
 
-      renderTabs();
+-- Your exploit logic goes here
 
-      monaco.languages.registerCompletionItemProvider('lua', {
-        provideCompletionItems: () => {
-          const suggestions = [
-            { label: 'game', kind: monaco.languages.CompletionItemKind.Module, insertText: 'game' },
-            { label: 'workspace', kind: monaco.languages.CompletionItemKind.Module, insertText: 'workspace' },
-            { label: 'script', kind: monaco.languages.CompletionItemKind.Variable, insertText: 'script' },
-            { label: 'wait', kind: monaco.languages.CompletionItemKind.Function, insertText: 'wait(${1:1})', insertTextRules: 4 },
-            { label: 'print', kind: monaco.languages.CompletionItemKind.Function, insertText: 'print("${1:text}")', insertTextRules: 4 },
-            { label: 'Instance.new', kind: monaco.languages.CompletionItemKind.Constructor, insertText: 'Instance.new("${1:Part}")', insertTextRules: 4 },
-            { label: 'Vector3.new', kind: monaco.languages.CompletionItemKind.Constructor, insertText: 'Vector3.new(${1:0}, ${2:0}, ${3:0})', insertTextRules: 4 },
-            { label: 'CFrame.new', kind: monaco.languages.CompletionItemKind.Constructor, insertText: 'CFrame.new(${1:0}, ${2:0}, ${3:0})', insertTextRules: 4 },
-            { label: 'Part', kind: monaco.languages.CompletionItemKind.Class, insertText: 'Part' },
-            { label: 'LocalPlayer', kind: monaco.languages.CompletionItemKind.Property, insertText: 'game.Players.LocalPlayer' },
-          ];
-          return { suggestions };
-        }
-      });
-    });
+RunService.Heartbeat:Connect(function(dt)
+    -- high-frequency tick
+end)
+`
+  }
+];
 
-    function renderTabs() {
-      const tabContainer = document.getElementById('tabs');
-      tabContainer.innerHTML = '';
+let tree = JSON.parse(localStorage.getItem('nf_tree_2026')) || [
+  {
+    type: 'folder',
+    name: 'workspace',
+    open: true,
+    children: [
+      { type: 'file', name: 'shadow_entry.lua', tabId: 'initial-1' },
+      { type: 'file', name: 'memory.lua',        tabId: null },
+      { type: 'file', name: 'network.lua',       tabId: null }
+    ]
+  },
+  {
+    type: 'folder',
+    name: 'modules',
+    open: false,
+    children: []
+  },
+  {
+    type: 'file',
+    name: 'config.luau',
+    tabId: null
+  }
+];
 
-      tabData.forEach((tab, i) => {
-        const tabEl = document.createElement('div');
-        tabEl.className = 'tab' + (i === currentTabIndex ? ' active' : '');
+// ─── State Persistence ───────────────────────────────────────────────────────
+function persist() {
+  localStorage.setItem('nf_tabs_2026', JSON.stringify(tabs));
+  localStorage.setItem('nf_tree_2026', JSON.stringify(tree));
+}
 
-        const label = document.createElement('span');
-        label.textContent = tab.name;
-        label.title = tab.name;
+// ─── Tree Rendering (recursive) ──────────────────────────────────────────────
+function renderTree(container = document.getElementById('explorer-tree'), nodes = tree) {
+  container.innerHTML = '';
 
-        label.ondblclick = () => {
-          renameTabInline(tabEl, label, i);
+  nodes.forEach(node => {
+    const el = document.createElement('div');
+    el.className = `tree-node ${node.type}`;
+    if (node.type === 'folder') el.classList.toggle('open', node.open);
+    if (node.tabId && node.tabId === currentTabId) el.classList.add('active');
+
+    el.textContent = node.name;
+
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+
+      if (node.type === 'folder') {
+        node.open = !node.open;
+        renderTree(container, nodes);
+        persist();
+        return;
+      }
+
+      if (node.tabId) {
+        openTab(node.tabId);
+      } else if (node.type === 'file') {
+        const newTab = {
+          id: `tab-${Date.now()}-${nextTabCounter++}`,
+          name: node.name,
+          content: `-- New shadow module: ${node.name}\n\n`
         };
-
-
-        tabEl.oncontextmenu = (e) => {
-          e.preventDefault();
-          showTabContextMenu(e, i);
-        };
-
-        const close = document.createElement('span');
-        close.textContent = '×';
-        close.className = 'close-btn';
-        close.onclick = (e) => {
-          e.stopPropagation();
-          closeTab(i);
-        };
-
-        tabEl.appendChild(label);
-        tabEl.appendChild(close);
-        tabEl.onclick = () => switchTab(i);
-
-        tabContainer.appendChild(tabEl);
-      });
-
-      const addTab = document.createElement('div');
-      addTab.className = 'add-tab';
-      addTab.textContent = '+';
-      addTab.onclick = addNewTab;
-
-      tabContainer.appendChild(addTab);
-    }
-
-    function renameTabInline(tabEl, label, i) {
-      const input = document.createElement('input');
-      input.value = tabData[i].name;
-      input.onblur = () => {
-        tabData[i].name = input.value.trim() || 'Untitled';
+        tabs.push(newTab);
+        node.tabId = newTab.id;
+        openTab(newTab.id);
+        renderTree();
         renderTabs();
-        saveTabs();
-      };
-      input.onkeydown = (e) => {
-        if (e.key === 'Enter') input.blur();
-      };
-      tabEl.replaceChild(input, label);
-      input.focus();
-      input.select();
-    }
+        persist();
+      }
+    });
 
-    function switchTab(index) {
-      if (index === currentTabIndex) return;
-      tabData[currentTabIndex].content = editor.getValue();
-      currentTabIndex = index;
-      document.getElementById('container').style.opacity = '0';
-      setTimeout(() => {
-        editor.setValue(tabData[currentTabIndex].content || '');
-        document.getElementById('container').style.animation = 'fadeIn 0.4s forwards';
-      }, 150);
+    container.appendChild(el);
+
+    if (node.type === 'folder' && node.open && node.children?.length) {
+      const childrenContainer = document.createElement('div');
+      childrenContainer.className = 'tree-children open';
+      container.appendChild(childrenContainer);
+      renderTree(childrenContainer, node.children);
+    }
+  });
+}
+
+// ─── Tab Management ──────────────────────────────────────────────────────────
+function renderTabs() {
+  const bar = document.getElementById('tab-bar');
+  const addBtn = document.getElementById('add-tab-btn');
+
+  // Clear except add button
+  while (bar.firstChild !== addBtn) {
+    bar.removeChild(bar.firstChild);
+  }
+
+  tabs.forEach(tab => {
+    const t = document.createElement('div');
+    t.className = `editor-tab${tab.id === currentTabId ? ' active' : ''}`;
+    t.draggable = true;
+
+    t.innerHTML = `
+      <span class="tab-label">${tab.name}</span>
+      <span class="tab-close">×</span>
+    `;
+
+    t.addEventListener('click', () => openTab(tab.id));
+
+    t.querySelector('.tab-close').addEventListener('click', e => {
+      e.stopPropagation();
+      if (tabs.length === 1) return;
+
+      const idx = tabs.findIndex(t => t.id === tab.id);
+      tabs.splice(idx, 1);
+
+      if (currentTabId === tab.id) {
+        currentTabId = tabs[Math.max(0, idx - 1)]?.id || tabs[0]?.id;
+      }
+
       renderTabs();
-      saveTabs();
-    }
+      openTab(currentTabId);
+      persist();
+    });
 
-    function addNewTab() {
-      const newTab = {
-        name: `Tab ${tabData.length + 1}`,
-        content: '-- https://discord.gg/JC6HVgdm9d '
-      };
-      tabData.push(newTab);
-      currentTabIndex = tabData.length - 1;
-      renderTabs();
-      editor.setValue(newTab.content);
-      saveTabs();
-    }
+    bar.insertBefore(t, addBtn);
+  });
+}
 
-    function closeTab(index) {
-      if (tabData.length === 1) return;
-      tabData.splice(index, 1);
-      if (currentTabIndex >= tabData.length) currentTabIndex = tabData.length - 1;
-      renderTabs();
-      editor.setValue(tabData[currentTabIndex].content);
-      saveTabs();
-    }
+function openTab(tabId) {
+  const tab = tabs.find(t => t.id === tabId);
+  if (!tab || !editor) return;
 
-    function saveTabs() {
-      localStorage.setItem('tabsData', JSON.stringify(tabData));
-    }
+  currentTabId = tabId;
+  editor.setValue(tab.content || '');
+  editor.focus();
 
-    window.getEditorText = function () {
-      return editor.getValue();
+  renderTabs();
+  renderTree();
+
+  // Update status bar
+  document.getElementById('cursor-pos').textContent = 'Ln 1, Col 1';
+}
+
+// ─── Monaco Initialization ───────────────────────────────────────────────────
+require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.52.0/min/vs' } });
+
+require(['vs/editor/editor.main'], function () {
+  monaco.editor.defineTheme('shadow-core-2026', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: '',               foreground: 'e8e8ff', background: '000000' },
+      { token: 'keyword',        foreground: 'ff79c6' },
+      { token: 'type',           foreground: '8be9fd' },
+      { token: 'string',         foreground: 'f1fa8c' },
+      { token: 'number',         foreground: 'bd93f9' },
+      { token: 'comment',        foreground: '6272a4', fontStyle: 'italic' },
+      { token: 'function',       foreground: '50fa7b' },
+      { token: 'variable',       foreground: 'f8f8f2' },
+      { token: 'variable.parameter', foreground: 'ffb86c' },
+      { token: 'property',       foreground: 'ffca80' },
+      { token: 'delimiter',      foreground: '6272a4' }
+    ],
+    colors: {
+      'editor.background':           '#000000',
+      'editor.foreground':           '#e8e8ff',
+      'editorCursor.foreground':     '#00eaff',
+      'editor.lineHighlightBackground': '#111122',
+      'editor.selectionBackground':  '#44448888',
+      'editor.inactiveSelectionBackground': '#33335566',
+      'scrollbarSlider.background':  '#2a2a5544',
+      'scrollbarSlider.hoverBackground': '#40408088',
+      'editorLineNumber.foreground': '#606080',
+      'editorLineNumber.activeForeground': '#a0a0c0'
+    }
+  });
+
+  editor = monaco.editor.create(document.getElementById('editor-container'), {
+    value: '',
+    language: 'lua',
+    theme: 'shadow-core-2026',
+    fontFamily: 'JetBrains Mono, Consolas, monospace',
+    fontSize: 14,
+    lineHeight: 20,
+    letterSpacing: 0.5,
+    minimap: { enabled: false },
+    scrollbar: {
+      vertical: 'visible',
+      horizontal: 'hidden',
+      verticalScrollbarSize: 10,
+      useShadows: false
+    },
+    scrollBeyondLastLine: false,
+    automaticLayout: true,
+    folding: true,
+    glyphMargin: false,
+    roundedSelection: true,
+    cursorBlinking: 'phase',
+    cursorSmoothCaretAnimation: 'on',
+    renderLineHighlight: 'line',
+    lineNumbersMinChars: 4,
+    fixedOverflowWidgets: true,
+    'semanticHighlighting.enabled': true
+  });
+
+  // Cursor position tracking
+  editor.onDidChangeCursorPosition(e => {
+    const pos = e.position;
+    document.getElementById('cursor-pos').textContent =
+      `Ln ${pos.lineNumber}, Col ${pos.column}`;
+  });
+
+  // Auto-save on change
+  let lastSave = 0;
+  editor.onDidChangeModelContent(() => {
+    if (!currentTabId) return;
+    const now = Date.now();
+    if (now - lastSave < 300) return;
+    lastSave = now;
+
+    const tab = tabs.find(t => t.id === currentTabId);
+    if (tab) {
+      tab.content = editor.getValue();
+      persist();
+    }
+  });
+
+  // ─── Advanced Luau / Roblox Completions (2026 edition) ─────────────────────
+  monaco.languages.registerCompletionItemProvider('lua', {
+    triggerCharacters: ['.', ':', '(', '"', "'", '[', '{', ' '],
+    provideCompletionItems: (model, position) => {
+      const lineUntil = model.getValueInRange({
+        startLineNumber: position.lineNumber,
+        startColumn: 1,
+        endLineNumber: position.lineNumber,
+        endColumn: position.column
+      });
+
+      const suggestions = [
+
+        // Core Roblox Services (2026 known stable)
+        { label: 'Players',        insertText: 'game:GetService("Players")',       kind: monaco.languages.CompletionItemKind.Module },
+        { label: 'RunService',     insertText: 'game:GetService("RunService")',    kind: monaco.languages.CompletionItemKind.Module },
+        { label: 'ReplicatedStorage', insertText: 'game:GetService("ReplicatedStorage")', kind: monaco.languages.CompletionItemKind.Module },
+        { label: 'UserInputService', insertText: 'game:GetService("UserInputService")', kind: monaco.languages.CompletionItemKind.Module },
+        { label: 'TweenService',   insertText: 'game:GetService("TweenService")',  kind: monaco.languages.CompletionItemKind.Module },
+        { label: 'HttpService',    insertText: 'game:GetService("HttpService")',   kind: monaco.languages.CompletionItemKind.Module },
+        { label: 'LocalPlayer',    insertText: 'game.Players.LocalPlayer',         kind: monaco.languages.CompletionItemKind.Property },
+
+        // Common constructors & types
+        { label: 'Vector3',        insertText: 'Vector3.new(${1:0}, ${2:0}, ${3:0})', kind: monaco.languages.CompletionItemKind.Constructor },
+        { label: 'CFrame',         insertText: 'CFrame.new(${1:0}, ${2:0}, ${3:0})',  kind: monaco.languages.CompletionItemKind.Constructor },
+        { label: 'UDim2',          insertText: 'UDim2.new(${1:0}, ${2:0}, ${3:0}, ${4:0})', kind: monaco.languages.CompletionItemKind.Constructor },
+        { label: 'Color3',         insertText: 'Color3.fromRGB(${1:255}, ${2:255}, ${3:255})', kind: monaco.languages.CompletionItemKind.Constructor },
+
+        // Exploit / shadow snippets
+        { label: 'hookfunction',   insertText: 'hookfunction(${1:old}, ${2:new})', kind: monaco.languages.CompletionItemKind.Function },
+        { label: 'hookmetamethod', insertText: 'hookmetamethod(${1:obj}, "${2:__index}", ${3:fn})', kind: monaco.languages.CompletionItemKind.Function },
+        { label: 'getrawmetatable', insertText: 'getrawmetatable(${1:obj})', kind: monaco.languages.CompletionItemKind.Function },
+        { label: 'setreadonly',    insertText: 'setreadonly(${1:mt}, ${2:false})', kind: monaco.languages.CompletionItemKind.Function },
+        { label: 'firesignal',     insertText: 'firesignal(${1:conn}, ${2:...})', kind: monaco.languages.CompletionItemKind.Function },
+
+        // Control flow snippets
+        { label: 'RunService:BindToRenderStep', kind: monaco.languages.CompletionItemKind.Snippet,
+          insertText: 'RunService:BindToRenderStep("Shadow_${1:NAME}", Enum.RenderPriority.${2:Camera}+1, function(dt)\n\t$0\nend)' }
+      ];
+
+      return { suggestions };
+    }
+  });
+
+  // Load initial state
+  if (tabs.length > 0) {
+    currentTabId = tabs[0].id;
+    openTab(currentTabId);
+  }
+
+  renderTabs();
+  renderTree();
+
+  // ─── Sidebar Resize ────────────────────────────────────────────────────────
+  let isResizing = false;
+  const sidebarEl = document.getElementById('sidebar');
+  const grip = document.getElementById('resize-grip');
+
+  grip.addEventListener('mousedown', e => {
+    isResizing = true;
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isResizing) return;
+    let w = e.clientX - 48; // 48 = activity bar
+    if (w < 140) w = 140;
+    if (w > 520) w = 520;
+    sidebarEl.style.width = w + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isResizing = false;
+    document.body.style.cursor = '';
+  });
+
+  // Collapse / expand sidebar
+  window.toggleSidebar = () => {
+    sidebarEl.classList.toggle('collapsed');
+  };
+
+  // Activity bar switching (placeholder — can be expanded)
+  document.querySelectorAll('.activity-icon').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.activity-icon').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      // Here you could switch sidebar content in future
+    });
+  });
+
+  // Add new tab
+  document.getElementById('add-tab-btn').addEventListener('click', () => {
+    const newTab = {
+      id: `tab-${Date.now()}-${nextTabCounter++}`,
+      name: `untitled_${nextTabCounter}.lua`,
+      content: `-- New shadow script • ${new Date().toISOString().slice(0,19)}\n\n`
     };
+    tabs.push(newTab);
+    openTab(newTab.id);
+    renderTabs();
+    persist();
+  });
 
-    function showTabContextMenu(e, tabIndex) {
-      const menu = document.getElementById('tab-context-menu');
-      contextTabIndex = tabIndex;
-      menu.style.top = `${e.clientY}px`;
-      menu.style.left = `${e.clientX}px`;
+  // Context menu (basic tab / file support)
+  let contextTargetId = null;
+
+  document.addEventListener('contextmenu', e => {
+    const menu = document.getElementById('context-menu');
+    menu.style.display = 'none';
+
+    // Example: right-click on tab
+    let tabEl = e.target.closest('.editor-tab');
+    if (tabEl) {
+      contextTargetId = tabs.find(t => tabEl.textContent.includes(t.name))?.id;
+      menu.style.left = e.pageX + 'px';
+      menu.style.top  = e.pageY + 'px';
       menu.style.display = 'block';
-
-      setTimeout(() => {
-        const rect = menu.getBoundingClientRect();
-        if (rect.right > window.innerWidth) {
-          menu.style.left = `${window.innerWidth - rect.width - 5}px`;
-        }
-        if (rect.bottom > window.innerHeight) {
-          menu.style.top = `${window.innerHeight - rect.height - 5}px`;
-        }
-      }, 1);
+      e.preventDefault();
     }
+  });
 
+  document.addEventListener('click', () => {
+    document.getElementById('context-menu').style.display = 'none';
+  });
 
-    document.addEventListener('mousedown', function(e) {
-      const menu = document.getElementById('tab-context-menu');
-      if (!menu.contains(e.target)) {
-        menu.style.display = 'none';
-      }
-    });
-
-
-    document.getElementById('context-rename').onclick = function() {
-      if (contextTabIndex !== null) {
-        const tabContainer = document.getElementById('tabs');
-        const tabEl = tabContainer.children[contextTabIndex];
-        const label = tabEl.querySelector('span');
-        renameTabInline(tabEl, label, contextTabIndex);
-        document.getElementById('tab-context-menu').style.display = 'none';
-      }
-    };
-
-
-    document.getElementById('context-delete').onclick = function() {
-      if (contextTabIndex !== null) {
-        closeTab(contextTabIndex);
-        document.getElementById('tab-context-menu').style.display = 'none';
-      }
-    };
-
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") {
-        document.getElementById('tab-context-menu').style.display = 'none';
-      }
-    });
-  </script>
+  // Context actions (expandable)
+  document.getElementById('ctx-delete').addEventListener('click', () => {
+    if (!contextTargetId) return;
+    tabs = tabs.filter(t => t.id !== contextTargetId);
+    if (currentTabId === contextTargetId) {
+      currentTabId = tabs[0]?.id || null;
+      if (currentTabId) openTab(currentTabId);
+    }
+    renderTabs();
+    persist();
+  });
+});
+</script>
 </body>
 </html>
