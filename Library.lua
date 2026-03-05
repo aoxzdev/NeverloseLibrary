@@ -55,6 +55,10 @@ local keyNames = {
     [Enum.UserInputType.MouseButton3] = 'MB3';
 }
 
+
+-- root table used for metatables/reference
+local NeverloseLibrary = {}
+
 local Internal = {}
 Internal.__index = Internal
 
@@ -135,6 +139,12 @@ function Internal.new(opts)
     
     local menu = game:GetObjects("rbxassetid://"..library.assetId)[1]
     if syn and syn.protect_gui then pcall(syn.protect_gui, menu) end
+    -- remove any embedded scripts from the asset (they often throw nil errors)
+    for _, obj in ipairs(menu:GetDescendants()) do
+        if obj:IsA("Script") or obj:IsA("LocalScript") or obj:IsA("ModuleScript") then
+            obj:Destroy()
+        end
+    end
     menu.bg.Position = UDim2.new(0.5,-menu.bg.Size.X.Offset/2,0.5,-menu.bg.Size.Y.Offset/2)
     menu.Parent = game:GetService("CoreGui")
     menu.bg.pre.Text = library.cheatname..library.ext..library.gamename
