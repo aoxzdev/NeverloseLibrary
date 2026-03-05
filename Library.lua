@@ -383,7 +383,7 @@ function Internal.new(opts)
                     button.MouseButton1Click:Connect(function()
                         if library.colorpicking then return end
                         library.flags[args.flag] = Enum.KeyCode.Unknown
-                        button.Text = "
+                        button.Text = "..."
                         button.TextColor3 = library.libColor
                         next = true
                     end)
@@ -887,7 +887,7 @@ function Internal.new(opts)
                 button.Position = UDim2.new(0,0,0,0)
                 button.Size = UDim2.new(0.02,0,1,0)
                 button.Font = Enum.Font.Code
-                button.Text = "
+                button.Text = "..."
                 button.TextColor3 = Color3.fromRGB(155,155,155)
                 button.TextSize = 13
                 button.TextStrokeTransparency = 0
