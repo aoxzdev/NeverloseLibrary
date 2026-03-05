@@ -1,4 +1,4 @@
--- Neverlose Library
+
 -- Made by @gq3z 
 
 local UserInputService = game:GetService("UserInputService")
@@ -70,7 +70,7 @@ function NeverloseLibrary.new(opts)
 / | \ ___/\ /\ ___/| | \/ |_( <_> )___ \\ ___/
 \____|__ /\___ >\_/ \___ >__| |____/\____/____ >\___ >
         \/ \/ \/ \/ \/
-             Neverlose Library, made by @gq3z
+               Neverlose Library, made by @gq3z
     ]])
 
     library.cheatname = opts.cheatname or ""
@@ -883,7 +883,7 @@ function NeverloseLibrary.new(opts)
         return tab
     end
 
-  
+    -- Auto-add Settings tab
     local settingsTab = library:addTab("Settings")
     local configGroup = settingsTab:createGroup("left", "Configuration")
 
@@ -966,7 +966,7 @@ function NeverloseLibrary.new(opts)
     })
 
     configGroup:addButton({
-        text = "Save Config",
+        text = "Create / Save Config",
         callback = function()
             saveConfig(currentConfigName)
             if library.options["_config_select"] and library.options["_config_select"].refresh then
