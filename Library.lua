@@ -1,9 +1,5 @@
--- Neverlose Library (Full Enhanced Version - All Features Included)
--- Enhanced with opaque dropdowns, fixed sliders, no loading screen, ASCII print on load
--- All elements: toggle (w/ sub keybind & colorpicker), button, slider, textbox, divider, list (dropdown), configbox, colorpicker, keybind
--- Settings tab auto-added with config system & Kill GUI button
--- Press RIGHT SHIFT to toggle menu
--- Made by @gq3z (enhanced for completeness)
+-- Neverlose Library
+-- Made by @gq3z 
 
 local UserInputService = game:GetService("UserInputService")
 local RunService       = game:GetService("RunService")
@@ -74,7 +70,7 @@ function NeverloseLibrary.new(opts)
 / | \ ___/\ /\ ___/| | \/ |_( <_> )___ \\ ___/
 \____|__ /\___ >\_/ \___ >__| |____/\____/____ >\___ >
         \/ \/ \/ \/ \/
-               Neverlose Library, made by @gq3z
+             Neverlose Library, made by @gq3z
     ]])
 
     library.cheatname = opts.cheatname or ""
